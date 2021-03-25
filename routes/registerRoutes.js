@@ -8,10 +8,10 @@ app.set("views","views")
 router.get('/',(req,res,next) => {
 
     var payload = {
-        pageTitle : "Login"
+        pageTitle : "Register"
     }
 
-    res.status(200).render('login',payload);
+    res.status(200).render('register',payload);
 })
 
 module.exports = router;
