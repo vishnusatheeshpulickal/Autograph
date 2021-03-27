@@ -50,3 +50,6 @@ width: 30%;
 a{
     text-decoration: none;
 }
+.errorMessage{
+    color:red
+}
