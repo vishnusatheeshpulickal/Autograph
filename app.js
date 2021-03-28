@@ -16,7 +16,8 @@ app.set("views","views")
 app.use(session({
     secret:process.env.SESSIONSECRET,
     resave:true,
-    saveUninitialized:false
+    saveUninitialized:false,
+    cookie : { maxAge: 378000000}
 }))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname,"public")));
@@ -24,9 +25,12 @@ app.use(express.static(path.join(__dirname,"public")));
 //Routes
 const loginRoute = require('./routes/loginRoutes')
 const registerRoute = require('./routes/registerRoutes')
+const logoutRoute = require('./routes/logout')
 
 app.use('/login',loginRoute)
 app.use('/register',registerRoute)
+app.use('/logout',logoutRoute)
+
 
 app.get('/',middleware.requireLogin,(req,res,next) => {
 
