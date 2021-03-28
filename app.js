@@ -4,6 +4,7 @@ const middleware = require('./middleware');
 const path = require('path');
 const bodyParser = require("body-parser");
 const mongoose = require('./database');
+const session = require('express-session');
 require('dotenv').config();
 
 
@@ -12,7 +13,11 @@ require('dotenv').config();
 app.set("view engine","pug");
 app.set("views","views")
 
-
+app.use(session({
+    secret:process.env.SESSIONSECRET,
+    resave:true,
+    saveUninitialized:false
+}))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname,"public")));
 
@@ -26,7 +31,8 @@ app.use('/register',registerRoute)
 app.get('/',middleware.requireLogin,(req,res,next) => {
 
     var payload = {
-        pageTitle : "Home"
+        pageTitle : "Home",
+        userLoggedIn : req.session.user
     }
     res.status(200).render('home',payload);
 })
