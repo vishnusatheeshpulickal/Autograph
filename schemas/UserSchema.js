@@ -32,6 +32,14 @@ const UserSchema = new Schema({
     profilePic:{
         type:String,
         default:"/images/profilepic.png"
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
+    isAdmin:{
+        type:Boolean,
+        default:false
     }
 },{timestamps:true});
 
