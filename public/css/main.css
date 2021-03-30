@@ -102,6 +102,5 @@ nav a:hover{
 }
 
 #submitPostButton:disabled {
-    /* background: green; */
     background: var(--buttonLight);
 }
