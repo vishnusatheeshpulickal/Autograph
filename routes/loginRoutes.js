@@ -34,7 +34,6 @@ var payload = req.body;
 
      if(user != null){
          var result = await bcrypt.compare(req.body.logPassword,user.password);
-        console.log(result)
          if(result === true){
              req.session.user = user;
              return res.redirect('/');

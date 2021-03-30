@@ -1,6 +1,9 @@
 body{
     background-image:linear-gradient(90deg,#4568dc,#b06ab3);
 }
+*{
+    outline: none !important;
+}
 .wrapper{
     display: flex;
     justify-content: center;
