@@ -5,7 +5,13 @@ const Post = require('../../schemas/PostSchema');
 const User = require('../../schemas/UserSchema');
 
 router.get('/',(req,res,next) => {
- 
+   Post.find()
+    .then(results => res.status(200).send(results))
+    .catch((error)=>{
+        console.log(error);
+        res.sendStatus(400);
+    })
+
 })
 
 router.post('/',async(req,res,next) => {
