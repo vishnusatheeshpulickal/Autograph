@@ -21,11 +21,11 @@ $("#submitPostButton").click(()=>{
         content : textbox.val()
     }
 
-    $.post('/api/posts',data,(postData,status,xhr)=>{
-       var html = createPostHtml(postData);
-       $(".postsContainer").prepend(html)
-       textbox.val("");
-       button.prop("disabled",true)
+    $.post("/api/posts", data, postData => {
+        var html = createPostHtml(postData);
+        $(".postsContainer").prepend(html);
+        textbox.val("");
+        button.prop("disabled", true);
     })
 })
 
@@ -41,7 +41,8 @@ $(document).on("click",".likeButton", (event) => {
         url:`/api/posts/${postId}/like`,
         type:"PUT",
         success:(postData) =>{
-           button.find("span").text(postData.likes.length || "")
+
+    button.find("span").text(postData.likes.length || "");
          
            if(postData.likes.includes(userLoggedIn._id)){
                button.addClass("active");
@@ -67,7 +68,7 @@ function createPostHtml(postData){
     const displayName = postedBy.firstName + " " + postedBy.lastName;
     const timeStamp = timeDifference(new Date(), new Date(postData.createdAt));;
     var verified = "";
-   var likeButtonActiveClass = postData.likes.include(userLoggedIn._id) ? "active" : "";
+   var likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : "";
 
     if(postedBy.isVerified){
      verified = '/images/verified.svg'
