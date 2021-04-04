@@ -41,8 +41,8 @@ const UserSchema = new Schema({
         type:Boolean,
         default:false
     },
-    likes:[{ type:Schema.Types.ObjectId, 
-        ref:'Post'}]
+    likes:[{ type:Schema.Types.ObjectId, ref:'Post'}],
+    retweet:[{ type:Schema.Types.ObjectId, ref:'Post'}]
 },{timestamps:true});
 
 var User = mongoose.model("User",UserSchema)

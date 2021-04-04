@@ -14,8 +14,9 @@ const PostSchema = new Schema({
    pinned:{
        type:Boolean
    },
-   likes:[{ type:Schema.Types.ObjectId, 
-    ref:'User'}]
+   likes:[{ type:Schema.Types.ObjectId, ref:'User'}],
+   retweetUsers:[{ type:Schema.Types.ObjectId, ref:'User'}],
+    retweetData:{ type:Schema.Types.ObjectId, ref:'Post'}
 },{timestamps:true});
 
 var Post = mongoose.model("Post",PostSchema)
