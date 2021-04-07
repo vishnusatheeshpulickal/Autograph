@@ -30,6 +30,18 @@ $("#submitPostButton").click(()=>{
     })
 })
 
+// Comment Button
+
+$("#replyModal").on("show.bs.modal", (event) => {
+    var button = $(event.relatedTarget);
+    var postId = getPostIdFromElement(button);
+    $("#submitReplyButton").data("id", postId);
+
+    $.get("/api/posts/" + postId, results => {
+        outputPosts(results, $("#originalPostContainer"));
+    })
+})
+
           // Like Button
 
 $(document).on("click",".likeButton", (event) => {
