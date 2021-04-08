@@ -5,13 +5,14 @@ const Post = require('../../schemas/PostSchema');
 const User = require('../../schemas/UserSchema');
 
 router.get('/',async (req,res,next) => {
-   var results = await getPosts();
+   var results = await getPosts({});
     res.status(200).send(results);
     })
 
-router.get('/:id',(req,res,next) => {
-   
- 
+router.get('/:id',async (req,res,next) => {
+   var postId = req.params.id;
+   var results = await getPosts({_id:postId})
+   res.status(200).send(results);
  })
 
 router.post('/',async(req,res,next) => {
@@ -104,8 +105,8 @@ router.post('/:id/retweet',async(req,res,next) => {
     
    })
 
-async function getPosts(){
-   var results = await Post.find()
+async function getPosts(filter){
+   var results = await Post.find(filter)
     .populate("postedBy")
     .populate("retweetData")
     .sort({"createdAt":-1})
