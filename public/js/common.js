@@ -107,6 +107,15 @@ $(document).on("click", ".retweetButton", (event) => {
   });
 });
 
+$(document).on("click", ".post", (event) => {
+  var element = $(event.target);
+  var postId = getPostIdFromElement(element);
+
+    if(postId !== undefined && !element.is("button")){
+      window.location.href = '/post/'+postId;
+    }
+});
+
 function getPostIdFromElement(element) {
   var isRoot = element.hasClass("post");
   var rootElement = isRoot ? element : element.closest(".post");
@@ -128,14 +137,8 @@ function createPostHtml(postData) {
   const displayName = postedBy.firstName + " " + postedBy.lastName;
   const timeStamp = timeDifference(new Date(), new Date(postData.createdAt));
   var verified = "";
-  var likeButtonActiveClass = postData.likes.includes(userLoggedIn._id)
-    ? "active"
-    : "";
-  var retweetButtonActiveClass = postData.retweetUsers.includes(
-    userLoggedIn._id
-  )
-    ? "active"
-    : "";
+  var likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : "";
+  var retweetButtonActiveClass = postData.retweetUsers.includes( userLoggedIn._id ) ? "active" : "";
 
   if (postedBy.isVerified) {
     verified = "/images/verified.svg";

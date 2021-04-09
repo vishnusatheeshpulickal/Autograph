@@ -26,6 +26,7 @@ app.use(express.static(path.join(__dirname,"public")));
 const loginRoute = require('./routes/loginRoutes')
 const registerRoute = require('./routes/registerRoutes')
 const logoutRoute = require('./routes/logout')
+const postRoute = require('./routes/postRoutes')
 
 //Api Routes
 const postApiRoute = require('./routes/api/posts')
@@ -33,6 +34,7 @@ const postApiRoute = require('./routes/api/posts')
 app.use('/login',loginRoute)
 app.use('/register',registerRoute)
 app.use('/logout',logoutRoute)
+app.use('/post',postRoute)
 
 app.use('/api/posts',postApiRoute)
 
@@ -42,10 +44,10 @@ app.get('/',middleware.requireLogin,(req,res,next) => {
         pageTitle : "Home",
         userLoggedIn : req.session.user,
         userLoggedInJs : JSON.stringify(req.session.user)
-
     }
     res.status(200).render('home',payload);
 })
+
 
 const port = process.env.PORT || 3000;
 app.listen(port,()=>console.log(`server running on port ${port}`))
