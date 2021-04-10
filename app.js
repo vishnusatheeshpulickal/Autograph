@@ -7,9 +7,6 @@ const mongoose = require('./database');
 const session = require('express-session');
 require('dotenv').config();
 
-
-
-
 app.set("view engine","pug");
 app.set("views","views")
 
@@ -34,7 +31,7 @@ const postApiRoute = require('./routes/api/posts')
 app.use('/login',loginRoute)
 app.use('/register',registerRoute)
 app.use('/logout',logoutRoute)
-app.use('/post',postRoute)
+app.use('/post',middleware.requireLogin,postRoute)
 
 app.use('/api/posts',postApiRoute)
 
