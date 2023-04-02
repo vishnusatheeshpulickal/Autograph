@@ -57,15 +57,37 @@ $("#replyModal").on("hidden.bs.modal", (event) => {
   $("#originalPostContainer").html("");
 });
 
+// Delete Button
+$("#deletePostModal").on("show.bs.modal", (event) => {
+  var button = $(event.relatedTarget);
+  var postId = getPostIdFromElement(button);
+  $("#deletePostButton").data("id", postId);
+});
+
+$("#deletePostButton").click((event) => {
+  var postId = $(event.target).data("id");
+
+  $.ajax({
+    url: `/api/posts/${postId}`,
+    type: "DELETE",
+    success: (data, status, xhr) => {
+      if (xhr.status != 202) {
+        alert("could not delete post");
+        return;
+      }
+
+      location.reload();
+    },
+  });
+});
+
 // Like Button
 
 $(document).on("click", ".likeButton", (event) => {
   var button = $(event.target);
   var postId = getPostIdFromElement(button);
 
-  if (postId === undefined) {
-    return;
-  }
+  if (postId === undefined) return;
 
   $.ajax({
     url: `/api/posts/${postId}/like`,
@@ -111,9 +133,9 @@ $(document).on("click", ".post", (event) => {
   var element = $(event.target);
   var postId = getPostIdFromElement(element);
 
-    if(postId !== undefined && !element.is("button")){
-      window.location.href = '/post/'+postId;
-    }
+  if (postId !== undefined && !element.is("button")) {
+    window.location.href = "/post/" + postId;
+  }
 });
 
 function getPostIdFromElement(element) {
@@ -131,14 +153,20 @@ function createPostHtml(postData, largeFont = false) {
 
   var isRetweet = postData.retweetData !== undefined;
   var retweetedBy = isRetweet ? postData.postedBy.username : null;
-  var postData = isRetweet ? postData.retweetData : postData;
+  postData = isRetweet ? postData.retweetData : postData;
 
   const postedBy = postData.postedBy;
   const displayName = postedBy.firstName + " " + postedBy.lastName;
   const timeStamp = timeDifference(new Date(), new Date(postData.createdAt));
   var verified = "";
-  var likeButtonActiveClass = postData.likes.includes(userLoggedIn._id) ? "active" : "";
-  var retweetButtonActiveClass = postData.retweetUsers.includes( userLoggedIn._id ) ? "active" : "";
+  var likeButtonActiveClass = postData.likes.includes(userLoggedIn._id)
+    ? "active"
+    : "";
+  var retweetButtonActiveClass = postData.retweetUsers.includes(
+    userLoggedIn._id
+  )
+    ? "active"
+    : "";
   var largeFontClass = largeFont ? "largeFont" : "";
 
   if (postedBy.isVerified) {
@@ -152,20 +180,23 @@ function createPostHtml(postData, largeFont = false) {
 
   var replyFlag = "";
 
-if(postData.replyTo && postData.replyTo._id){
-
-    if(!postData.replyTo._id){
-        return alert("reply to id is not populated");
-    }else if(!postData.replyTo.postedBy._id){
-        return alert("posted by is not populated");
+  if (postData.replyTo && postData.replyTo._id) {
+    if (!postData.replyTo._id) {
+      return alert("reply to id is not populated");
+    } else if (!postData.replyTo.postedBy._id) {
+      return alert("posted by is not populated");
     }
 
     var replyToUsername = postData.replyTo.postedBy.username;
     replyFlag = `<div class='replyFlag'>
                  Replying to <a href='/profile/${replyToUsername}'>@${replyToUsername}</a>
-                  </div>`
+                  </div>`;
+  }
 
-}
+  var buttons = "";
+  if (postData.postedBy._id == userLoggedIn._id) {
+    buttons = `<button data-id="${postData._id}" data-toggle="modal" data-target="#deletePostModal"><i class='fas fa-times'></i></button>`;
+  }
 
   return `<div class='post ${largeFontClass}' data-id='${postData._id}'>
                 <div class='postActionContainer'> 
@@ -183,6 +214,7 @@ if(postData.replyTo && postData.replyTo._id){
                          <img class='verified' src='${verified}'>
                          <span class='username'>@${postedBy.username}</span>
                          <span class='date'>${timeStamp}</span>
+                         ${buttons}
                        </div>
                        ${replyFlag}
                        <div class='postBody'>
@@ -259,13 +291,13 @@ function outputPosts(results, container) {
 function outputPostsWithReplies(results, container) {
   container.html("");
 
- if(results.replyTo !== undefined && results.replyTo._id !== undefined){
-  var html = createPostHtml(results.replyTo);
-  container.append(html);
- }
+  if (results.replyTo !== undefined && results.replyTo._id !== undefined) {
+    var html = createPostHtml(results.replyTo);
+    container.append(html);
+  }
 
- var mainPostHtml = createPostHtml(results.postData,true);
- container.append(mainPostHtml);
+  var mainPostHtml = createPostHtml(results.postData, true);
+  container.append(mainPostHtml);
 
   results.replies.forEach((result) => {
     var html = createPostHtml(result);
