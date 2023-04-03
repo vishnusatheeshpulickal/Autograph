@@ -110,9 +110,7 @@ $(document).on("click", ".retweetButton", (event) => {
   var button = $(event.target);
   var postId = getPostIdFromElement(button);
 
-  if (postId === undefined) {
-    return;
-  }
+  if (postId === undefined) return;
 
   $.ajax({
     url: `/api/posts/${postId}/retweet`,
@@ -156,6 +154,9 @@ function createPostHtml(postData, largeFont = false) {
   postData = isRetweet ? postData.retweetData : postData;
 
   const postedBy = postData.postedBy;
+  if (postedBy._id === undefined) {
+    return console.log("User object not populated");
+  }
   const displayName = postedBy.firstName + " " + postedBy.lastName;
   const timeStamp = timeDifference(new Date(), new Date(postData.createdAt));
   var verified = "";
