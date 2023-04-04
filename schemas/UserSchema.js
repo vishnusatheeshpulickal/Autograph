@@ -34,6 +34,7 @@ const UserSchema = new Schema(
       type: String,
       default: "/images/profilepic.png",
     },
+    coverPhoto: { type: String },
     isVerified: {
       type: Boolean,
       default: false,
