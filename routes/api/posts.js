@@ -4,10 +4,10 @@ const router = express.Router();
 const Post = require("../../schemas/PostSchema");
 const User = require("../../schemas/UserSchema");
 
-router.get("/", async (req, res, next) => {
-  var results = await getPosts({});
-  res.status(200).send(results);
-});
+// router.get("/", async (req, res, next) => {
+//   var results = await getPosts({});
+//   res.status(200).send(results);
+// });
 
 router.get("/", async (req, res, next) => {
   var searchObj = req.query;
