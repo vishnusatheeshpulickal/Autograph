@@ -3,6 +3,7 @@ const app = express();
 const router = express.Router();
 const Post = require("../../schemas/PostSchema");
 const User = require("../../schemas/UserSchema");
+const Notification = require("../../schemas/NotificationSchema");
 
 // router.get("/", async (req, res, next) => {
 //   var results = await getPosts({});
@@ -69,7 +70,7 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   if (!req.body.content) {
-    console.log("Content param is not sent with request");
+    console.log("Content param not sent with request");
     return res.sendStatus(400);
   }
 
@@ -85,7 +86,17 @@ router.post("/", async (req, res, next) => {
   Post.create(postData)
     .then(async (newPost) => {
       newPost = await User.populate(newPost, { path: "postedBy" });
-      res.status(200).send(newPost);
+
+      if (newPost.replyTo !== undefined) {
+        await Notification.insertNotification(
+          req.body.replyTo,
+          req.session.user._id,
+          "reply",
+          newPost._id
+        );
+      }
+
+      res.status(201).send(newPost);
     })
     .catch((error) => {
       console.log(error);
@@ -93,13 +104,13 @@ router.post("/", async (req, res, next) => {
     });
 });
 
-// Like button
-
 router.put("/:id/like", async (req, res, next) => {
   var postId = req.params.id;
   var userId = req.session.user._id;
+
   var isLiked =
     req.session.user.likes && req.session.user.likes.includes(postId);
+
   var option = isLiked ? "$pull" : "$addToSet";
 
   // Insert user like
@@ -122,15 +133,23 @@ router.put("/:id/like", async (req, res, next) => {
     res.sendStatus(400);
   });
 
+  if (!isLiked) {
+    await Notification.insertNotification(
+      post.postedBy,
+      userId,
+      "postLike",
+      post._id
+    );
+  }
+
   res.status(200).send(post);
 });
-
-//    Retweet button
 
 router.post("/:id/retweet", async (req, res, next) => {
   var postId = req.params.id;
   var userId = req.session.user._id;
 
+  // Try and delete retweet
   var deletedPost = await Post.findOneAndDelete({
     postedBy: userId,
     retweetData: postId,
@@ -142,6 +161,7 @@ router.post("/:id/retweet", async (req, res, next) => {
   var option = deletedPost != null ? "$pull" : "$addToSet";
 
   var repost = deletedPost;
+
   if (repost == null) {
     repost = await Post.create({ postedBy: userId, retweetData: postId }).catch(
       (error) => {
@@ -151,7 +171,7 @@ router.post("/:id/retweet", async (req, res, next) => {
     );
   }
 
-  //  Insert User likes
+  // Insert user like
   req.session.user = await User.findByIdAndUpdate(
     userId,
     { [option]: { retweets: repost._id } },
@@ -161,7 +181,7 @@ router.post("/:id/retweet", async (req, res, next) => {
     res.sendStatus(400);
   });
 
-  // Insert post likes
+  // Insert post like
   var post = await Post.findByIdAndUpdate(
     postId,
     { [option]: { retweetUsers: userId } },
@@ -170,6 +190,15 @@ router.post("/:id/retweet", async (req, res, next) => {
     console.log(error);
     res.sendStatus(400);
   });
+
+  if (!deletedPost) {
+    await Notification.insertNotification(
+      post.postedBy,
+      userId,
+      "retweet",
+      post._id
+    );
+  }
 
   res.status(200).send(post);
 });
@@ -208,9 +237,8 @@ async function getPosts(filter) {
     .populate("retweetData")
     .populate("replyTo")
     .sort({ createdAt: -1 })
-    .catch((error) => {
-      console.log(error);
-    });
+    .catch((error) => console.log(error));
+
   results = await User.populate(results, { path: "replyTo.postedBy" });
   return await User.populate(results, { path: "retweetData.postedBy" });
 }
