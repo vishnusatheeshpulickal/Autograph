@@ -261,8 +261,6 @@ $("#createChatButton").click(() => {
   });
 });
 
-// Like Button
-
 $(document).on("click", ".likeButton", (event) => {
   var button = $(event.target);
   var postId = getPostIdFromElement(button);
@@ -283,8 +281,6 @@ $(document).on("click", ".likeButton", (event) => {
     },
   });
 });
-
-// Retweet Button
 
 $(document).on("click", ".retweetButton", (event) => {
   var button = $(event.target);
@@ -347,6 +343,17 @@ $(document).on("click", ".followButton", (e) => {
       }
     },
   });
+});
+
+$(document).on("click", ".notification.active", (e) => {
+  var container = $(e.target);
+  var notificationId = container.data().id;
+
+  var href = container.attr("href");
+  e.preventDefault();
+
+  var callback = () => (window.location = href);
+  markNotificationsAsOpened(notificationId, callback);
 });
 
 function getPostIdFromElement(element) {
@@ -650,4 +657,18 @@ function messageReceived(newMessage) {
   } else {
     addChatMessageHtml(newMessage);
   }
+}
+
+function markNotificationsAsOpened(notificationId = null, callback = null) {
+  if (callback == null) callback = () => location.reload();
+
+  var url =
+    notificationId != null
+      ? `/api/notifications/${notificationId}/markAsOpened`
+      : `/api/notifications/markAsOpened`;
+  $.ajax({
+    url: url,
+    type: "PUT",
+    success: () => callback(),
+  });
 }

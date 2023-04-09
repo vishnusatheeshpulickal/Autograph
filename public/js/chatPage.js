@@ -52,6 +52,8 @@ $(".sendMessageButton").click(() => {
 });
 
 $(".inputTextbox").keydown((event) => {
+  updateTyping();
+
   if (event.which === 13) {
     messageSubmitted();
     return false;
