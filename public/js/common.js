@@ -3,11 +3,17 @@ var cropper;
 var timer;
 var selectedUsers = [];
 
-$("#postTextarea,#replyTextarea").keyup((event) => {
+$(document).ready(() => {
+  refreshMessagesBadge();
+  refreshNotificationsBadge();
+});
+
+$("#postTextarea, #replyTextarea").keyup((event) => {
   var textbox = $(event.target);
   var value = textbox.val().trim();
 
   var isModal = textbox.parents(".modal").length == 1;
+
   var submitButton = isModal ? $("#submitReplyButton") : $("#submitPostButton");
 
   if (submitButton.length == 0) return alert("No submit button found");
@@ -20,10 +26,12 @@ $("#postTextarea,#replyTextarea").keyup((event) => {
   submitButton.prop("disabled", false);
 });
 
-$("#submitPostButton,#submitReplyButton").click(() => {
+$("#submitPostButton, #submitReplyButton").click(() => {
   var button = $(event.target);
+
   var isModal = button.parents(".modal").length == 1;
   var textbox = isModal ? $("#replyTextarea") : $("#postTextarea");
+
   var data = {
     content: textbox.val(),
   };
@@ -46,23 +54,20 @@ $("#submitPostButton,#submitReplyButton").click(() => {
   });
 });
 
-// Comment Button
-
 $("#replyModal").on("show.bs.modal", (event) => {
   var button = $(event.relatedTarget);
   var postId = getPostIdFromElement(button);
   $("#submitReplyButton").data("id", postId);
 
   $.get("/api/posts/" + postId, (results) => {
-    outputPosts(results, $("#originalPostContainer"));
+    outputPosts(results.postData, $("#originalPostContainer"));
   });
 });
 
-$("#replyModal").on("hidden.bs.modal", (event) => {
-  $("#originalPostContainer").html("");
-});
+$("#replyModal").on("hidden.bs.modal", () =>
+  $("#originalPostContainer").html("")
+);
 
-// Delete Button
 $("#deletePostModal").on("show.bs.modal", (event) => {
   var button = $(event.relatedTarget);
   var postId = getPostIdFromElement(button);
@@ -308,7 +313,7 @@ $(document).on("click", ".post", (event) => {
   var postId = getPostIdFromElement(element);
 
   if (postId !== undefined && !element.is("button")) {
-    window.location.href = "/post/" + postId;
+    window.location.href = "/posts/" + postId;
   }
 });
 
@@ -358,10 +363,10 @@ $(document).on("click", ".notification.active", (e) => {
 
 function getPostIdFromElement(element) {
   var isRoot = element.hasClass("post");
-  var rootElement = isRoot ? element : element.closest(".post");
+  var rootElement = isRoot == true ? element : element.closest(".post");
   var postId = rootElement.data().id;
 
-  if (postId === undefined) return console.log("Post id is undefined");
+  if (postId === undefined) return alert("Post id undefined");
 
   return postId;
 }
@@ -510,13 +515,14 @@ function outputPosts(results, container) {
   if (!Array.isArray(results)) {
     results = [results];
   }
+
   results.forEach((result) => {
     var html = createPostHtml(result);
     container.append(html);
   });
 
   if (results.length == 0) {
-    container.append("<span class='noResult'>Nothing to show</span>");
+    container.append("<span class='noResults'>Nothing to show.</span>");
   }
 }
 
@@ -535,11 +541,8 @@ function outputPostsWithReplies(results, container) {
     var html = createPostHtml(result);
     container.append(html);
   });
-
-  if (results.length == 0) {
-    container.append("<span class='noResult'>Nothing to show</span>");
-  }
 }
+
 function outputUsers(results, container) {
   container.html("");
 
@@ -657,6 +660,8 @@ function messageReceived(newMessage) {
   } else {
     addChatMessageHtml(newMessage);
   }
+
+  refreshMessagesBadge();
 }
 
 function markNotificationsAsOpened(notificationId = null, callback = null) {
@@ -670,5 +675,29 @@ function markNotificationsAsOpened(notificationId = null, callback = null) {
     url: url,
     type: "PUT",
     success: () => callback(),
+  });
+}
+
+function refreshMessagesBadge() {
+  $.get("/api/chats", { unreadOnly: true }, (data) => {
+    var numResults = data.length;
+
+    if (numResults > 0) {
+      $("#messagesBadge").text(numResults).addClass("active");
+    } else {
+      $("#messagesBadge").text("").removeClass("active");
+    }
+  });
+}
+
+function refreshNotificationsBadge() {
+  $.get("/api/notifications", { unreadOnly: true }, (data) => {
+    var numResults = data.length;
+
+    if (numResults > 0) {
+      $("#notificationBadge").text(numResults).addClass("active");
+    } else {
+      $("#notificationBadge").text("").removeClass("active");
+    }
   });
 }
