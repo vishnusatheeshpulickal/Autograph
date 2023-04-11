@@ -7,6 +7,7 @@ const fs = require("fs");
 const upload = multer({ dest: "uploads/" });
 const User = require("../../schemas/UserSchema");
 const Post = require("../../schemas/PostSchema");
+const Notification = require("../../schemas/NotificationSchema");
 
 router.get("/", async (req, res, next) => {
   var searchObj = req.query;

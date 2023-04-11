@@ -611,6 +611,7 @@ button span {
   display: flex;
   flex-direction: row-reverse;
   height: 100%;
+  margin-right: 10px;
 }
 
 .chatImagesContainer img {
@@ -618,7 +619,6 @@ button span {
   height: 40px;
   border: 2px solid #fff;
   border-radius: 50%;
-  margin-left: -10px;
 }
 
 .chatImagesContainer .userCount {
@@ -785,4 +785,19 @@ button span {
 #notificationBadge.active,
 #messagesBadge.active {
   visibility: visible;
+}
+
+#notificationList {
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  width: 350px;
+  background-color: white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+#notificationList .active {
+  background-color: white;
 }
