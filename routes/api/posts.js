@@ -1,14 +1,12 @@
 const express = require("express");
 const app = express();
 const router = express.Router();
-const Post = require("../../schemas/PostSchema");
+const bodyParser = require("body-parser");
 const User = require("../../schemas/UserSchema");
+const Post = require("../../schemas/PostSchema");
 const Notification = require("../../schemas/NotificationSchema");
 
-// router.get("/", async (req, res, next) => {
-//   var results = await getPosts({});
-//   res.status(200).send(results);
-// });
+app.use(bodyParser.urlencoded({ extended: false }));
 
 router.get("/", async (req, res, next) => {
   var searchObj = req.query;
@@ -86,10 +84,11 @@ router.post("/", async (req, res, next) => {
   Post.create(postData)
     .then(async (newPost) => {
       newPost = await User.populate(newPost, { path: "postedBy" });
+      newPost = await Post.populate(newPost, { path: "replyTo" });
 
       if (newPost.replyTo !== undefined) {
         await Notification.insertNotification(
-          req.body.replyTo,
+          newPost.replyTo.postedBy,
           req.session.user._id,
           "reply",
           newPost._id

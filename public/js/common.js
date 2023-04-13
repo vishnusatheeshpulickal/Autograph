@@ -131,7 +131,7 @@ $("#unpinPostButton").click((event) => {
     data: { pinned: false },
     success: (data, status, xhr) => {
       if (xhr.status != 204) {
-        alert("could not delete post");
+        alert("could unpin the post");
         return;
       }
 
@@ -786,7 +786,7 @@ function getNotificationUrl(notification) {
     notification.notificationType == "postLike" ||
     notification.notificationType == "reply"
   ) {
-    url = `/post/${notification.entityId}`;
+    url = `/posts/${notification.entityId}`;
   } else if (notification.notificationType == "follow") {
     url = `/profile/${notification.entityId}`;
   }

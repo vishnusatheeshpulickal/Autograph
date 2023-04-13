@@ -1,8 +1,8 @@
 mixin createPostForm(userLoggedIn)
-    .postFormContainer 
-        .userImageContainer 
+    .postFormContainer
+        .userImageContainer
             img(src=userLoggedIn.profilePic, alt="User's profile picture")
-        .textareaContainer 
+        .textareaContainer
             textarea#postTextarea(placeholder="What's happening?")
             .buttonsContainer
                 button#submitPostButton(disabled="") Post
@@ -35,7 +35,7 @@ mixin createDeletePostModal()
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                     span(aria-hidden='true') &times;
                 .modal-body
-                    p You won't be able to delete this.
+                    p You won't be able to recover the deleted post.
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Close
                     button#deletePostButton.btn.btn-primary(type='button') Delete
@@ -61,7 +61,7 @@ mixin createImageUploadModal()
         .modal-dialog(role='document')
             .modal-content
                 .modal-header
-                    h5#dimageUploadModalLabel.modal-title Upload a new profile picture
+                    h5#imageUploadModalLabel.modal-title Upload a new profile picture
                     button.close(type='button', data-dismiss='modal', aria-label='Close')
                     span(aria-hidden='true') &times;
                 .modal-body
@@ -120,13 +120,13 @@ mixin createUnpinPostModal()
 
 mixin createChatImage(chatData, userLoggedIn)
     if(!chatData)
-        return 
+        return
 
-    - var i = 0;
+    - var i = 0
     - var maxImagesToShow = 3
     - var remainingUsers = chatData.users.length - maxImagesToShow
     - remainingUsers-- // Remove 1 because we won't show our own images
-
+    
     .chatImagesContainer
         if remainingUsers > 0
             .userCount
@@ -135,8 +135,9 @@ mixin createChatImage(chatData, userLoggedIn)
         each user in chatData.users
             if chatData.users.length != 1 && user._id == userLoggedIn._id
                 - continue
-            else if i >= maxImagesToShow
+            else if i >= maxImagesToShow    
                 - break
+            
             img(src=user.profilePic, alt="User's profile picture", title=user.firstName)
             - i++
 
@@ -152,4 +153,4 @@ mixin createChatNameModal(chat)
                     input#chatNameTextbox(type="text", placeholder="Enter a name for this chat", value=chat.chatName)
                 .modal-footer
                     button.btn.btn-secondary(type='button', data-dismiss='modal') Cancel
-                    button#chatNameButton.btn.btn-primary(type='button') Save 
+                    button#chatNameButton.btn.btn-primary(type='button') Save
