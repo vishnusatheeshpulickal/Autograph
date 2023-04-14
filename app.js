@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cloudinary = require("cloudinary").v2;
 const middleware = require("./middleware");
 const path = require("path");
 const mongoose = require("./database");
@@ -24,6 +25,12 @@ app.use(
     cookie: { maxAge: 378000000 },
   })
 );
+
+cloudinary.config({
+  // cloud_name: process.env.CLOUDNAME,
+  // api_key: process.env.APIKEY,
+  // api_secret: process.env.APISECRET,
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.urlencoded({ extended: false }));
