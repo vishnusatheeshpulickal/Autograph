@@ -30,10 +30,6 @@ To install and run the app, follow these steps:
 
 ## Screenshots
 
-![App Screenshot](https://res.cloudinary.com/vishnusatheesh/image/upload/v1681501726/Autograph-1_mk2igc.png)
-
-![App Screenshot](https://res.cloudinary.com/vishnusatheesh/image/upload/v1681501723/Autograph-2_jbrtf9.png)
-
 ![App Screenshot](https://res.cloudinary.com/vishnusatheesh/image/upload/v1681501739/Autograph-3_qtvyjz.png)
 ## Support
 
